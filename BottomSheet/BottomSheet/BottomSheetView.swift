@@ -11,16 +11,18 @@ import SnapKit
 class BottomSheetView: UIView {
     
     private unowned let contentView: UIView
+    private unowned let gestureView: UIView
+    
     private var initialHeight: CGFloat?
-    private var initialPosition: CGFloat = 17.0
-    private var currentHeight: CGFloat = 0
-
+    private var currentOffSet: CGFloat?
+    
     private var topConstraint: Constraint?
     private var bottomConstraint: Constraint?
     private var heightConstraint: Constraint?
     
-    init(frame: CGRect = .zero, contentView: UIView, initialBottomSheetHeight heigth: CGFloat? = nil) {
+    init(frame: CGRect = .zero, contentView: UIView, gestureView: UIView, initialBottomSheetHeight heigth: CGFloat? = nil) {
         self.contentView = contentView
+        self.gestureView = gestureView
         super.init(frame: frame)
         self.initialHeight = heigth
         setup()
@@ -35,6 +37,7 @@ class BottomSheetView: UIView {
         view.backgroundColor = .blue
         return view
     }()
+    
     // MARK: - Helpers
     
     private func getInitialHeight() -> CGFloat {
@@ -55,15 +58,21 @@ class BottomSheetView: UIView {
         
         if contentHeight < defaultHeight && contentHeight != 0.0 {
             self.initialHeight = contentHeight
-            currentHeight = contentHeight
             return contentHeight
         }
         
         self.initialHeight = defaultHeight
-        currentHeight = defaultHeight
         
         return defaultHeight
     
+    }
+    
+    func offsetWhenPanGestureInitialized() -> CGFloat? {
+        guard let height = heightConstraint?.layoutConstraints.first?.constant else { return nil }
+        let offset = UIScreen.main.bounds.height - (height + gestureView.bounds.height)
+        self.currentOffSet = offset
+        
+        return offset
     }
     
     func showBottomSheet() {
@@ -76,45 +85,29 @@ class BottomSheetView: UIView {
     }
     
     func remakeConstraints(y position: CGFloat) {
-//        initialPosition = position
-//        currentHeight = initialHeight ?? 0
+        guard let offSet = offsetWhenPanGestureInitialized() else { return }
+        heightConstraint?.update(priority: 200)
+        gestureView.snp.remakeConstraints { (remake) in
+            topConstraint = remake.top.equalToSuperview().offset(offSet).constraint
+            remake.left.right.equalToSuperview()
+            remake.height.equalTo(gestureView.bounds.height)
+        }
+        
+        contentView.snp.remakeConstraints { (remake) in
+            remake.top.equalTo(gestureView.snp.bottom)
+            remake.left.right.bottom.equalToSuperview()
+        }
+        
     }
     
     func moveTopConstraintWith(y position: CGFloat) {
+        guard let offset = currentOffSet else { return }
+        let newOffset = offset + position
         
-//        update(height: position)
-        
-        if position < initialPosition {
-            currentHeight += 1.0
-            update(height: currentHeight)
-            print("Menor")
-            return
-        }
-
-        if position > initialPosition {
-            currentHeight -= 1
-            update(height: currentHeight)
-            print("Maior")
-            return
-        }
-        
-        if position == initialPosition {
-            return
-        }
-
-//        guard let height = initialHeight else { return }
-//        currentHeight = height
-//        print("igual")
-//        update(height: height)
+        currentOffSet = newOffset
+        topConstraint?.update(offset: newOffset)
         
     }
-    
-    private func update(height: CGFloat) {
-        bottomSheetContainerView.snp.updateConstraints { (update) in
-            update.height.equalTo(height)
-        }
-    }
-    
     
 }
 
@@ -127,22 +120,23 @@ extension BottomSheetView {
     }
     
     private func buildViewHierarchy() {
-        bottomSheetContainerView.addSubview(contentView)
-        self.addSubview(bottomSheetContainerView)
+        self.addSubview(contentView)
+        self.addSubview(gestureView)
     }
     
     private func setupConstraints() {
-        bottomSheetContainerView.snp.makeConstraints { (make) in
-            topConstraint = make.top.greaterThanOrEqualToSuperview().offset(40).constraint
+        gestureView.snp.makeConstraints { (make) in
             make.left.right.equalToSuperview()
-            let height = getInitialHeight()
-            bottomConstraint = make.bottom.equalToSuperview().offset(height).constraint
-            heightConstraint = make.height.equalTo(height).constraint
+            make.height.equalTo(gestureView.bounds.height)
         }
         
         contentView.snp.makeConstraints { (make) in
-            make.edges.equalToSuperview()
+            topConstraint = make.top.equalTo(gestureView.snp.bottom).constraint
+            make.left.right.equalToSuperview()
+            let height = getInitialHeight()
+            bottomConstraint = make.bottom.equalToSuperview().offset(height + gestureView.bounds.height).constraint
+            heightConstraint = make.height.equalTo(height).constraint
+            
         }
-        
     }
 }

@@ -33,10 +33,12 @@ class BottomSheetViewController: UIViewController {
     
     private lazy var gestureView: UIView = {
         let gestureView = CustomGestureView(frame: CGRect(x: 0.0, y: 0.0, width: UIScreen.main.bounds.width, height: 35))
+        
         gestureView.isUserInteractionEnabled = true
         gestureView.backgroundColor = .white
         let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePanGesture(panGesture:)))
         gestureView.addGestureRecognizer(panGesture)
+        
         return gestureView
     }()
     
@@ -68,7 +70,7 @@ class BottomSheetViewController: UIViewController {
     }()
     
     private lazy var bottomSheetView: BottomSheetView = {
-        let view = BottomSheetView(contentView: containerView)
+        let view = BottomSheetView(contentView: contentView, gestureView: gestureView)
         view.backgroundColor = UIColor.black.withAlphaComponent(0.4)
         return view
     }()
@@ -92,6 +94,7 @@ class BottomSheetViewController: UIViewController {
     }
     
     // MARK: - Actions
+    
     @objc private func handlePanGesture(panGesture: UIPanGestureRecognizer) {
         
         let translation = panGesture.translation(in: view)
@@ -108,7 +111,7 @@ class BottomSheetViewController: UIViewController {
             case .began:
                 bottomSheetView.remakeConstraints(y: yPosition + translation.y)
             case .changed:
-                bottomSheetView.moveTopConstraintWith(y: yPosition + translation.y)
+                bottomSheetView.moveTopConstraintWith(y: translation.y)
             case .ended:
                 print("será???")
             case .cancelled, .failed, .possible:
