@@ -51,8 +51,8 @@ class BottomSheetViewController: UIViewController {
         
         view.backgroundColor = contentView.backgroundColor
         
-        view.addSubview(gestureView)
         view.addSubview(contentView)
+        view.addSubview(gestureView)
         
         gestureView.snp.makeConstraints { (make) in
             make.top.left.right.equalToSuperview()
@@ -93,34 +93,29 @@ class BottomSheetViewController: UIViewController {
     
     // MARK: - Actions
     @objc private func handlePanGesture(panGesture: UIPanGestureRecognizer) {
-    //        heightConstraint?.isActive = false
-            print("oi")
-//            let translation = panGesture.translation(in: gestureView)
-//            gestureView.center = CGPoint(x: 0, y: gestureView.center.y + translation.y)
-//            panGesture.setTranslation(CGPoint.zero, in: self)
-            
-//            print("y", translation.y)
-//            print("x", translation.x)
+   
+            let translation = panGesture.translation(in: bottomSheetView)
+        let yPosition = gestureView.center.y
+        
+        gestureView.center = CGPoint(
+            x: gestureView.center.x,
+            y: yPosition + translation.y)
+        panGesture.setTranslation(CGPoint.zero, in: bottomSheetView)
+        
+        print("y", gestureView.center.y)
             
             switch panGesture.state {
-            case .possible:
-                break
             case .began:
-                break
+                bottomSheetView.remakeConstraints()
             case .changed:
-                break
+                bottomSheetView.moveTopConstraintWith(y: translation.y)
             case .ended:
                 print("será???")
-            case .cancelled:
-                break
-            case .failed:
+            case .cancelled, .failed, .possible:
                 break
             @unknown default:
                 break
-            }
-            
-    //        gestureView.center = CGPoint(x: viewDrag.center.x + translation.x, y: viewDrag.center.y + translation.y)
-    //        sender.setTranslation(CGPoint.zero, in: self.view)
-            
         }
+            
+    }
 }

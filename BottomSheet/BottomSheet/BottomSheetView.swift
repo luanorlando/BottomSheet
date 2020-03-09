@@ -12,6 +12,8 @@ class BottomSheetView: UIView {
     
     private unowned let contentView: UIView
     private var initalHeight: CGFloat?
+    private var updateHeight: CGFloat = 0.0
+    
     
     private var topConstraint: Constraint?
     private var bottomConstraint: Constraint?
@@ -51,16 +53,14 @@ class BottomSheetView: UIView {
         let defaultHeight = screemHeight / 2
         
         self.initalHeight = defaultHeight
+        self.updateHeight = defaultHeight
         
         if contentHeight < defaultHeight && contentHeight != 0.0 {
             self.initalHeight = contentHeight
+            self.updateHeight = contentHeight
         }
         
-        if let initialHeight = self.initalHeight {
-            return initialHeight
-        }
-    
-        return defaultHeight
+        return self.initalHeight ?? defaultHeight
     
     }
     
@@ -70,6 +70,19 @@ class BottomSheetView: UIView {
             self.layoutIfNeeded()
             
         }
+        
+    }
+    
+    func remakeConstraints() {
+//        heightConstraint?.isActive = false
+//        bottomSheetContainerView.snp.remakeConstraints { (remake) in
+//            topConstraint = remake.top.equalToSuperview().constraint
+//            remake.left.right.bottom.equalToSuperview()
+//        }
+    }
+    
+    func moveTopConstraintWith(y position: CGFloat) {
+//        topConstraint?.update(offset: position)
         
     }
     
@@ -90,7 +103,7 @@ extension BottomSheetView {
     
     private func setupConstraints() {
         bottomSheetContainerView.snp.makeConstraints { (make) in
-            topConstraint = make.top.greaterThanOrEqualToSuperview().offset(15).constraint
+//            topConstraint = make.top.greaterThanOrEqualToSuperview().offset(15).constraint
             make.left.right.equalToSuperview()
             let height = initialHeight()
             bottomConstraint = make.bottom.equalToSuperview().offset(height).constraint
