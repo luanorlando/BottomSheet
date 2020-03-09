@@ -8,13 +8,21 @@
 
 import SnapKit
 
+enum BottomSheetStatus {
+    case dismiss
+    case initial
+    case full
+    case none
+}
+
 class BottomSheetView: UIView {
     
     private unowned let contentView: UIView
     private unowned let gestureView: UIView
     
     private var initialHeight: CGFloat?
-    private var currentOffSet: CGFloat?
+    private var initialOffset: CGFloat?
+    private var currentOffset: CGFloat?
     
     private var topConstraint: Constraint?
     private var bottomConstraint: Constraint?
@@ -31,12 +39,6 @@ class BottomSheetView: UIView {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    private var bottomSheetContainerView: UIView = {
-        let view = UIView()
-        view.backgroundColor = .blue
-        return view
-    }()
     
     // MARK: - Helpers
     
@@ -67,10 +69,30 @@ class BottomSheetView: UIView {
     
     }
     
+    private func getState() -> BottomSheetStatus {
+        let currentHeight = contentView.bounds.height
+        guard let initialHeight = self.initialHeight else { return .none }
+        let screemHeight = UIScreen.main.bounds.height
+        let oneThirdOfScreem = screemHeight / 3
+        
+        var state: BottomSheetStatus
+        
+        switch currentHeight {
+        case 0..<initialHeight / 2:
+            state = .dismiss
+        case initialHeight / 2..<oneThirdOfScreem * 2 :
+            state = .initial
+        default:
+            state = .full
+        }
+        
+        return state
+    }
+    
     func offsetWhenPanGestureInitialized() -> CGFloat? {
         guard let height = heightConstraint?.layoutConstraints.first?.constant else { return nil }
         let offset = UIScreen.main.bounds.height - (height + gestureView.bounds.height)
-        self.currentOffSet = offset
+        self.currentOffset = offset
         
         return offset
     }
@@ -81,7 +103,6 @@ class BottomSheetView: UIView {
             self.layoutIfNeeded()
             
         }
-        
     }
     
     func remakeConstraints(y position: CGFloat) {
@@ -101,17 +122,36 @@ class BottomSheetView: UIView {
     }
     
     func moveTopConstraintWith(y position: CGFloat) {
-        guard let offset = currentOffSet else { return }
+        guard let offset = currentOffset else { return }
         let newOffset = offset + position
         
-        currentOffSet = newOffset
-        topConstraint?.update(offset: newOffset)
+        currentOffset = newOffset
+        if newOffset > 40 {
+            topConstraint?.update(offset: newOffset)
+        }
+        
+        
+    }
+    
+    func setPosition() {
+        let state = getState()
+        
+        switch state {
+        case .dismiss:
+            break
+        case .initial:
+            break
+        case .full:
+            break
+        case .none:
+            break
+        }
         
     }
     
 }
 
-// MARK: - ViewCode
+// MARK: - ViewCode Initial
 
 extension BottomSheetView {
     private func setup() {
@@ -139,4 +179,27 @@ extension BottomSheetView {
             
         }
     }
+}
+
+// MARK: set Positions
+
+extension BottomSheetView {
+    private func setInitialPosition() {
+        gestureView.snp.remakeConstraints { (remake) in
+            remake.left.right.equalToSuperview()
+            remake.height.equalTo(gestureView.bounds.height)
+        }
+        
+        contentView.snp.remakeConstraints { (remake) in
+            guard let initialHeight = self.initialHeight else { return }
+            topConstraint = remake.top.equalTo(gestureView.snp.bottom).constraint
+            
+            
+        }
+    }
+    
+    private func setFullPosition() {
+        
+    }
+    
 }
