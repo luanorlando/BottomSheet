@@ -93,22 +93,22 @@ class BottomSheetViewController: UIViewController {
     
     // MARK: - Actions
     @objc private func handlePanGesture(panGesture: UIPanGestureRecognizer) {
-   
-            let translation = panGesture.translation(in: bottomSheetView)
+        
+        let translation = panGesture.translation(in: view)
         let yPosition = gestureView.center.y
         
         gestureView.center = CGPoint(
             x: gestureView.center.x,
             y: yPosition + translation.y)
-        panGesture.setTranslation(CGPoint.zero, in: bottomSheetView)
+        panGesture.setTranslation(CGPoint.zero, in: view)
         
         print("y", gestureView.center.y)
             
             switch panGesture.state {
             case .began:
-                bottomSheetView.remakeConstraints()
+                bottomSheetView.remakeConstraints(y: yPosition + translation.y)
             case .changed:
-                bottomSheetView.moveTopConstraintWith(y: translation.y)
+                bottomSheetView.moveTopConstraintWith(y: yPosition + translation.y)
             case .ended:
                 print("será???")
             case .cancelled, .failed, .possible:

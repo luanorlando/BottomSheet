@@ -11,10 +11,10 @@ import SnapKit
 class BottomSheetView: UIView {
     
     private unowned let contentView: UIView
-    private var initalHeight: CGFloat?
-    private var updateHeight: CGFloat = 0.0
-    
-    
+    private var initialHeight: CGFloat?
+    private var initialPosition: CGFloat = 17.0
+    private var currentHeight: CGFloat = 0
+
     private var topConstraint: Constraint?
     private var bottomConstraint: Constraint?
     private var heightConstraint: Constraint?
@@ -22,7 +22,7 @@ class BottomSheetView: UIView {
     init(frame: CGRect = .zero, contentView: UIView, initialBottomSheetHeight heigth: CGFloat? = nil) {
         self.contentView = contentView
         super.init(frame: frame)
-        self.initalHeight = heigth
+        self.initialHeight = heigth
         setup()
     }
     
@@ -32,12 +32,13 @@ class BottomSheetView: UIView {
     
     private var bottomSheetContainerView: UIView = {
         let view = UIView()
+        view.backgroundColor = .blue
         return view
     }()
     // MARK: - Helpers
     
-    private func initialHeight() -> CGFloat {
-        guard let height = self.initalHeight else {
+    private func getInitialHeight() -> CGFloat {
+        guard let height = self.initialHeight else {
             let result = dynamicHeight()
             return result
         }
@@ -52,15 +53,16 @@ class BottomSheetView: UIView {
         
         let defaultHeight = screemHeight / 2
         
-        self.initalHeight = defaultHeight
-        self.updateHeight = defaultHeight
-        
         if contentHeight < defaultHeight && contentHeight != 0.0 {
-            self.initalHeight = contentHeight
-            self.updateHeight = contentHeight
+            self.initialHeight = contentHeight
+            currentHeight = contentHeight
+            return contentHeight
         }
         
-        return self.initalHeight ?? defaultHeight
+        self.initialHeight = defaultHeight
+        currentHeight = defaultHeight
+        
+        return defaultHeight
     
     }
     
@@ -73,18 +75,46 @@ class BottomSheetView: UIView {
         
     }
     
-    func remakeConstraints() {
-//        heightConstraint?.isActive = false
-//        bottomSheetContainerView.snp.remakeConstraints { (remake) in
-//            topConstraint = remake.top.equalToSuperview().constraint
-//            remake.left.right.bottom.equalToSuperview()
-//        }
+    func remakeConstraints(y position: CGFloat) {
+//        initialPosition = position
+//        currentHeight = initialHeight ?? 0
     }
     
     func moveTopConstraintWith(y position: CGFloat) {
-//        topConstraint?.update(offset: position)
+        
+//        update(height: position)
+        
+        if position < initialPosition {
+            currentHeight += 1.0
+            update(height: currentHeight)
+            print("Menor")
+            return
+        }
+
+        if position > initialPosition {
+            currentHeight -= 1
+            update(height: currentHeight)
+            print("Maior")
+            return
+        }
+        
+        if position == initialPosition {
+            return
+        }
+
+//        guard let height = initialHeight else { return }
+//        currentHeight = height
+//        print("igual")
+//        update(height: height)
         
     }
+    
+    private func update(height: CGFloat) {
+        bottomSheetContainerView.snp.updateConstraints { (update) in
+            update.height.equalTo(height)
+        }
+    }
+    
     
 }
 
@@ -103,12 +133,11 @@ extension BottomSheetView {
     
     private func setupConstraints() {
         bottomSheetContainerView.snp.makeConstraints { (make) in
-//            topConstraint = make.top.greaterThanOrEqualToSuperview().offset(15).constraint
+            topConstraint = make.top.greaterThanOrEqualToSuperview().offset(40).constraint
             make.left.right.equalToSuperview()
-            let height = initialHeight()
+            let height = getInitialHeight()
             bottomConstraint = make.bottom.equalToSuperview().offset(height).constraint
             heightConstraint = make.height.equalTo(height).constraint
-            
         }
         
         contentView.snp.makeConstraints { (make) in
