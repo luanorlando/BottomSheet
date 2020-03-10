@@ -69,13 +69,14 @@ class BottomSheetViewController: UIViewController {
     // MARK: - Actions
     
     @objc private func handlePanGesture(panGesture: UIPanGestureRecognizer) {
+        let viewHeight = self.bottomSheetView.bounds.height
         
         let translation = panGesture.translation(in: view)
-        let yPosition = gestureView.center.y
+        let yPosition = viewHeight < 40 ?  gestureView.center.y + translation.y : gestureView.center.y
         
         gestureView.center = CGPoint(
             x: gestureView.center.x,
-            y: yPosition + translation.y)
+            y: yPosition)
         
         panGesture.setTranslation(CGPoint.zero, in: view)
         
