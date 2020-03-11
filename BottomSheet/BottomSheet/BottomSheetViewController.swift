@@ -23,7 +23,7 @@ class BottomSheetViewController: UIViewController {
     // MARK: UIComponnents
     
     private lazy var contentView: UIView = {
-        let view = UIView(frame: CGRect(x: 0, y: 0, width: Int(UIScreen.main.bounds.width), height: 200))
+        let view = UIView(frame: CGRect(x: 0, y: 0, width: Int(UIScreen.main.bounds.width), height: 0))
         
         view.backgroundColor = .white
         view.isUserInteractionEnabled = true

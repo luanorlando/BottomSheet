@@ -144,8 +144,7 @@ class BottomSheetView: UIView {
         case .dismiss:
             hideBottomSheet()
         case .initial:
-            break
-//            setInitialPosition()
+            setInitialPosition(withAnimation: true)
         case .full:
             break
         case .none:
@@ -189,8 +188,10 @@ extension BottomSheetView {
 // MARK: set Positions
 
 extension BottomSheetView {
-    private func setInitialPosition() {
+    private func setInitialPosition(withAnimation isAnimation: Bool = false) {
         guard let offSet = offsetWhenPanGestureInitialized() else { return }
+        let dispathGroup = DispatchGroup()
+        dispathGroup.enter()
         heightConstraint?.update(priority: 200)
         gestureView.snp.remakeConstraints { (remake) in
             topConstraint = remake.top.equalToSuperview().offset(offSet).constraint
@@ -201,6 +202,15 @@ extension BottomSheetView {
         contentView.snp.remakeConstraints { (remake) in
             remake.top.equalTo(gestureView.snp.bottom)
             remake.left.right.bottom.equalToSuperview()
+            dispathGroup.leave()
+        }
+        
+        if isAnimation {
+            dispathGroup.notify(queue: .main) {
+                UIView.animate(withDuration: 0.3) {
+                    self.layoutIfNeeded()
+                }
+            }
         }
     }
     
