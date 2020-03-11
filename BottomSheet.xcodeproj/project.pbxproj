@@ -16,6 +16,7 @@
 		5446543F241459180048D29E /* BottomSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5446543E241459180048D29E /* BottomSheetViewController.swift */; };
 		54465441241459820048D29E /* BottomSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54465440241459820048D29E /* BottomSheetView.swift */; };
 		544654632415AB1A0048D29E /* CustomGestureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 544654622415AB1A0048D29E /* CustomGestureView.swift */; };
+		54F0FDF424197099003A61CB /* BottomSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54F0FDF324197099003A61CB /* BottomSheet.swift */; };
 		A8A78969B5F035C0A6A5DDA9 /* Pods_BottomSheet.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E9819C679DE36E3260547546 /* Pods_BottomSheet.framework */; };
 /* End PBXBuildFile section */
 
@@ -31,6 +32,7 @@
 		5446543E241459180048D29E /* BottomSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomSheetViewController.swift; sourceTree = "<group>"; };
 		54465440241459820048D29E /* BottomSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomSheetView.swift; sourceTree = "<group>"; };
 		544654622415AB1A0048D29E /* CustomGestureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomGestureView.swift; sourceTree = "<group>"; };
+		54F0FDF324197099003A61CB /* BottomSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomSheet.swift; sourceTree = "<group>"; };
 		DAD3A869C96F171879DC2A86 /* Pods-BottomSheet.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BottomSheet.debug.xcconfig"; path = "Target Support Files/Pods-BottomSheet/Pods-BottomSheet.debug.xcconfig"; sourceTree = "<group>"; };
 		E9819C679DE36E3260547546 /* Pods_BottomSheet.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BottomSheet.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F90328AF3E3BBB79259C8248 /* Pods-BottomSheet.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BottomSheet.release.xcconfig"; path = "Target Support Files/Pods-BottomSheet/Pods-BottomSheet.release.xcconfig"; sourceTree = "<group>"; };
@@ -87,6 +89,7 @@
 				5446543E241459180048D29E /* BottomSheetViewController.swift */,
 				54465440241459820048D29E /* BottomSheetView.swift */,
 				544654622415AB1A0048D29E /* CustomGestureView.swift */,
+				54F0FDF324197099003A61CB /* BottomSheet.swift */,
 			);
 			path = BottomSheet;
 			sourceTree = "<group>";
@@ -225,6 +228,7 @@
 			files = (
 				5446542E2414580C0048D29E /* ViewController.swift in Sources */,
 				54465441241459820048D29E /* BottomSheetView.swift in Sources */,
+				54F0FDF424197099003A61CB /* BottomSheet.swift in Sources */,
 				5446542A2414580C0048D29E /* AppDelegate.swift in Sources */,
 				5446542C2414580C0048D29E /* SceneDelegate.swift in Sources */,
 				5446543F241459180048D29E /* BottomSheetViewController.swift in Sources */,

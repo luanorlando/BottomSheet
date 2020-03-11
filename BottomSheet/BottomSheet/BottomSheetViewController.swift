@@ -10,7 +10,10 @@ import UIKit
 
 class BottomSheetViewController: UIViewController {
     
-    init() {
+    private let contentView: UIView
+    
+    init(contentView: UIView) {
+        self.contentView = contentView
         super.init(nibName: nil, bundle: nil)
         self.modalPresentationStyle = .overFullScreen
         self.modalTransitionStyle = .crossDissolve
@@ -22,20 +25,20 @@ class BottomSheetViewController: UIViewController {
     
     // MARK: UIComponnents
     
-    private lazy var contentView: UIView = {
-        let view = UIView(frame: CGRect(x: 0, y: 0, width: Int(UIScreen.main.bounds.width), height: 0))
-        
-        view.backgroundColor = .white
-        view.isUserInteractionEnabled = true
-        
-        return view
-    }()
+//    private lazy var contentView: UIView = {
+//        let view = UIView(frame: CGRect(x: 0, y: 0, width: Int(UIScreen.main.bounds.width), height: 0))
+//
+//        view.backgroundColor = .white
+//        view.isUserInteractionEnabled = true
+//
+//        return view
+//    }()
     
     private lazy var gestureView: UIView = {
         let gestureView = CustomGestureView(frame: CGRect(x: 0.0, y: 0.0, width: UIScreen.main.bounds.width, height: 35))
         
         gestureView.isUserInteractionEnabled = true
-        gestureView.backgroundColor = .black
+        gestureView.backgroundColor = contentView.backgroundColor
         let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePanGesture(panGesture:)))
         gestureView.addGestureRecognizer(panGesture)
         
@@ -43,6 +46,8 @@ class BottomSheetViewController: UIViewController {
     }()
     
     private lazy var bottomSheetView: BottomSheetView = {
+        contentView.clipsToBounds = true
+        contentView.isUserInteractionEnabled = true
         let view = BottomSheetView(contentView: contentView, gestureView: gestureView)
         view.backgroundColor = UIColor.black.withAlphaComponent(0.4)
         view.delegate = self

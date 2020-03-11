@@ -16,8 +16,16 @@ class ViewController: UIViewController {
     }
 
     @IBAction func actionButton() {
-        let vc = BottomSheetViewController()
-        self.present(vc, animated: true)
+        let label = UILabel(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
+        label.backgroundColor = .green
+        let view = UIView(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 200))
+        view.addSubview(label)
+        view.backgroundColor = .white
+        
+        BottomSheet.show(contentView: view, on: self)
+        
+//        let vc = BottomSheetViewController()
+//        self.present(vc, animated: true)
     }
     
 }
