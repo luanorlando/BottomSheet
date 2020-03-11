@@ -8,6 +8,10 @@
 
 import SnapKit
 
+protocol BottomSheetViewDelegate: class {
+    func dismissView()
+}
+
 enum BottomSheetStatus {
     case dismiss
     case initial
@@ -27,6 +31,8 @@ class BottomSheetView: UIView {
     private var topConstraint: Constraint?
     private var bottomConstraint: Constraint?
     private var heightConstraint: Constraint?
+    
+    weak var delegate: BottomSheetViewDelegate?
     
     init(frame: CGRect = .zero, contentView: UIView, gestureView: UIView, initialBottomSheetHeight heigth: CGFloat? = nil) {
         self.contentView = contentView
@@ -106,17 +112,16 @@ class BottomSheetView: UIView {
     }
     
     func remakeConstraints(y position: CGFloat) {
-        guard let offSet = offsetWhenPanGestureInitialized() else { return }
-        heightConstraint?.update(priority: 200)
-        gestureView.snp.remakeConstraints { (remake) in
-            topConstraint = remake.top.equalToSuperview().offset(offSet).constraint
-            remake.left.right.equalToSuperview()
-            remake.height.equalTo(gestureView.bounds.height)
-        }
-        
-        contentView.snp.remakeConstraints { (remake) in
-            remake.top.equalTo(gestureView.snp.bottom)
-            remake.left.right.bottom.equalToSuperview()
+        let state = getState()
+        switch state {
+        case .dismiss:
+            break
+        case .initial:
+            setInitialPosition()
+        case .full:
+            break
+        case .none:
+            break
         }
         
     }
@@ -126,10 +131,9 @@ class BottomSheetView: UIView {
         let newOffset = offset + position
         
         currentOffset = newOffset
-        if newOffset > 40 {
+        if newOffset > 20 {
             topConstraint?.update(offset: newOffset)
         }
-        
         
     }
     
@@ -138,9 +142,10 @@ class BottomSheetView: UIView {
         
         switch state {
         case .dismiss:
-            break
+            hideBottomSheet()
         case .initial:
             break
+//            setInitialPosition()
         case .full:
             break
         case .none:
@@ -185,17 +190,47 @@ extension BottomSheetView {
 
 extension BottomSheetView {
     private func setInitialPosition() {
+        guard let offSet = offsetWhenPanGestureInitialized() else { return }
+        heightConstraint?.update(priority: 200)
         gestureView.snp.remakeConstraints { (remake) in
+            topConstraint = remake.top.equalToSuperview().offset(offSet).constraint
             remake.left.right.equalToSuperview()
             remake.height.equalTo(gestureView.bounds.height)
         }
         
         contentView.snp.remakeConstraints { (remake) in
-            guard let initialHeight = self.initialHeight else { return }
-            topConstraint = remake.top.equalTo(gestureView.snp.bottom).constraint
-            
-            
+            remake.top.equalTo(gestureView.snp.bottom)
+            remake.left.right.bottom.equalToSuperview()
         }
+    }
+    
+    private func hideBottomSheet() {
+        let height = UIScreen.main.bounds.height
+        let dispatchGroup = DispatchGroup()
+        
+        dispatchGroup.enter()
+        
+        self.gestureView.snp.remakeConstraints { (remake) in
+            remake.left.right.equalToSuperview()
+            remake.height.equalTo(self.gestureView.bounds.height)
+        }
+        
+        self.contentView.snp.remakeConstraints { (remake) in
+            remake.top.equalTo(self.gestureView.snp.bottom)
+            remake.left.right.equalToSuperview()
+            remake.height.equalTo(self.contentView.bounds.height)
+            remake.bottom.equalToSuperview().offset(height + self.gestureView.bounds.height)
+            dispatchGroup.leave()
+        }
+        
+        dispatchGroup.notify(queue: .main) {
+            UIView.animate(withDuration: 0.5, animations: {
+                self.layoutIfNeeded()
+            }) { (_) in
+                self.delegate?.dismissView()
+            }
+        }
+        
     }
     
     private func setFullPosition() {

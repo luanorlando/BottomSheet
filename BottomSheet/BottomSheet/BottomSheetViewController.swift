@@ -45,6 +45,7 @@ class BottomSheetViewController: UIViewController {
     private lazy var bottomSheetView: BottomSheetView = {
         let view = BottomSheetView(contentView: contentView, gestureView: gestureView)
         view.backgroundColor = UIColor.black.withAlphaComponent(0.4)
+        view.delegate = self
         return view
     }()
     
@@ -72,7 +73,7 @@ class BottomSheetViewController: UIViewController {
         let viewHeight = self.bottomSheetView.bounds.height
         
         let translation = panGesture.translation(in: view)
-        let yPosition = viewHeight < 40 ?  gestureView.center.y + translation.y : gestureView.center.y
+        let yPosition = viewHeight < 20 ?  gestureView.center.y + translation.y : gestureView.center.y
         
         gestureView.center = CGPoint(
             x: gestureView.center.x,
@@ -97,5 +98,13 @@ class BottomSheetViewController: UIViewController {
                 break
         }
             
+    }
+}
+
+// MARK: - BottomSheetViewDelegate
+
+extension BottomSheetViewController: BottomSheetViewDelegate {
+    func dismissView() {
+        self.dismiss(animated: true, completion: nil)
     }
 }
