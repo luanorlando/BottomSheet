@@ -116,12 +116,10 @@ class BottomSheetView: UIView {
         switch state {
         case .dismiss:
             break
-        case .initial:
+        case .initial, .none:
             setInitialPosition()
         case .full:
-            break
-        case .none:
-            break
+            currentOffset = 0
         }
         
     }
@@ -143,12 +141,11 @@ class BottomSheetView: UIView {
         switch state {
         case .dismiss:
             hideBottomSheet()
-        case .initial:
+        case .initial, .none:
             setInitialPosition(withAnimation: true)
         case .full:
-            break
-        case .none:
-            break
+            setFullPosition()
+            
         }
         
     }
@@ -244,7 +241,10 @@ extension BottomSheetView {
     }
     
     private func setFullPosition() {
-        
+        topConstraint?.update(offset: 19.0)
+        UIView.animate(withDuration: 0.5, animations: {
+            self.layoutIfNeeded()
+        })
     }
     
 }
